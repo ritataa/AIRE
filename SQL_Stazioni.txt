@@ -1,0 +1,28 @@
+CREATE TABLE Stazioni
+(
+    Id_stazione INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    Nome varchar(100) NOT NULL,
+    Location bigint NOT NULL,
+    LONG_X_4326 bigint NOT NULL,
+    LAT_X_4326 bigint NOT NULL
+);
+
+CREATE TABLE inquinanti
+(
+    ID_Inquinanti int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Nome_inquinante varchar(100) NOT NULL,
+    Valore_limite int NOT NULL,
+    unita_di_misura varchar(15) NOT NULL
+);
+
+CREATE TABLE rilevamenti
+(
+    ID_Rilevamento int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Data DATE NOT NULL,
+    Orario Time NOT NULL,
+    Valore int NOT NULL,
+    id_stazione int NOT NULL,
+    id_inquinante int NOT NULL,
+    FOREIGN KEY (id_stazione) REFERENCES stazione (ID_Stazione),
+    FOREIGN KEY (id_inquinante) REFERENCES inquinanti (ID_Inquinanti)
+);

@@ -1,0 +1,15 @@
+ID_inquinante; Nome_inquinante           ; Valore_limite; unit� di misura
+1; monossido di carbonio     ;10; mg/m�
+2; Ossidi di azoto           ;30; �g/m�
+3;PM10;40; �g/m�
+4;Particelle sospese - PM2,5;25; �g/m�
+5; Benzene                   ;5; �g/m�
+6; Biossido di azoto         ;40; �g/m�
+7; Ammoniaca                 ;270; �g/m�
+8; Ozono                     ;120; �g/m�
+9; Piombo                    ;0,5; �g/m�
+10; biossido di zolfo         ;125; �g/m�
+11; Nikel                     ;20; ng/m�
+12; Arsenico                  ;6; ng/m�
+13; Cadmio                    ;5; ng/m�
+14; Benzo(a)Pirene            ;1; ng/m�
