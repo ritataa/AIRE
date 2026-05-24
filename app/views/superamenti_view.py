@@ -7,15 +7,11 @@ class SuperamentiView(tk.Frame):
         super().__init__(parent, bg="#ffffff")
         self.db = Database()
 
-        # Titoli e descrizioni
-        tk.Label(self, text="Superamenti Limiti UE", font=("Arial", 18, "bold"), bg="#ffffff", fg="#2c3e50").pack(pady=10)
-        tk.Label(self, text="Elenco delle rilevazioni in cui il valore dell'inquinante ha superato la soglia di legge.", 
-                 bg="#ffffff", fg="#2c3e50", font=("Arial", 12)).pack(pady=5)
+        tk.Label(self, text="Superamenti Limiti UE", font=("Arial", 18, "bold"),bg="#ffffff", fg="#2c3e50").pack(pady=10)
+        tk.Label(self, text="Rilevamenti che hanno superato la soglia critica stabilita dall'Unione Europea.", bg="#ffffff", fg="#2c3e50", font=("Arial", 12)).pack(pady=5)
 
-        # Pulsante di aggiornamento
-        tk.Button(self, text="🔄 Ricarica Dati", command=self.carica_dati, bg="#3498db", fg="black", font=("Arial", 10, "bold")).pack(pady=10)
+        tk.Button(self, text="🔄 Ricarica Dati", command=self.carica_dati, bg="#e74c3c", fg="black", font=("Arial", 10, "bold")).pack(pady=10)
 
-        # Tabella
         colonne = ("Data", "Stazione", "Inquinante", "Valore Rilevato", "Limite UE")
         self.tree = ttk.Treeview(self, columns=colonne, show="headings", height=20)
 
@@ -24,8 +20,6 @@ class SuperamentiView(tk.Frame):
             self.tree.column(col, width=150, anchor="center")
 
         self.tree.pack(fill="both", expand=True, padx=20, pady=10)
-
-        # Carica automaticamente all'apertura
         self.carica_dati()
 
     def carica_dati(self):
@@ -36,14 +30,14 @@ class SuperamentiView(tk.Frame):
         if conn and conn.is_connected():
             cursor = conn.cursor()
             
-            # La magia è qui: filtriamo direttamente da DB usando >
+            # Query riscritta con il nuovo schema
             query = """
-                SELECT m.data_rilevazione, s.nome, i.nome, m.valore, i.limite_ue
-                FROM misurazioni m
-                JOIN stazioni s ON m.stazione_id = s.id
-                JOIN inquinanti i ON m.inquinante_id = i.id
-                WHERE m.valore > i.limite_ue
-                ORDER BY m.data_rilevazione DESC
+                SELECT r.data_rilevamento, s.nome, i.nome_inquinante, r.valore, i.valore_limite
+                FROM rilevamenti r
+                JOIN stazioni_rilevamento s ON r.id_stazione = s.id_stazione
+                JOIN inquinanti i ON r.id_inquinante = i.id_inquinante
+                WHERE r.valore > i.valore_limite
+                ORDER BY r.data_rilevamento DESC
                 LIMIT 200
             """
             try:

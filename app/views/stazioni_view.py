@@ -7,25 +7,18 @@ class StazioniView(tk.Frame):
         super().__init__(parent, bg="#ffffff")
         self.db = Database()
 
-        # Titolo della sezione
         tk.Label(self, text="Anagrafica Stazioni di Rilevamento", font=("Arial", 18, "bold"), bg="#ffffff", fg="#2c3e50").pack(pady=10)
-        tk.Label(self, text="Elenco delle centraline di monitoraggio della qualità dell'aria dislocate a Milano.", 
-                 bg="#ffffff", font=("Arial", 11), fg="#7f8c8d").pack(pady=5)
+        tk.Label(self, text="Elenco delle centraline con coordinate geografiche reali.", bg="#ffffff", font=("Arial", 11), fg="#7f8c8d").pack(pady=5)
 
-        # Tabella per visualizzare le stazioni
-        colonne = ("ID Stazione", "Nome Centralina", "Coordinate Geografiche")
+        # Tabella aggiornata con i nuovi campi del DB
+        colonne = ("ID Stazione", "Nome Centralina", "Longitudine (X)", "Latitudine (Y)")
         self.tree = ttk.Treeview(self, columns=colonne, show="headings", height=15)
 
         for col in colonne:
             self.tree.heading(col, text=col)
-            if col == "Coordinate Geografiche":
-                self.tree.column(col, width=250, anchor="center")
-            else:
-                self.tree.column(col, width=150, anchor="center")
+            self.tree.column(col, width=150, anchor="center")
 
         self.tree.pack(fill="both", expand=True, padx=20, pady=10)
-
-        # Carica i dati all'apertura
         self.carica_stazioni()
 
     def carica_stazioni(self):
@@ -36,7 +29,8 @@ class StazioniView(tk.Frame):
         if conn and conn.is_connected():
             cursor = conn.cursor()
             try:
-                cursor.execute("SELECT id, nome, zona_geografica FROM stazioni ORDER BY id")
+                # Query aggiornata con i nuovi nomi delle colonne
+                cursor.execute("SELECT id_stazione, nome, long_x_4326, lat_y_4326 FROM stazioni_rilevamento ORDER BY id_stazione")
                 for riga in cursor.fetchall():
                     self.tree.insert("", "end", values=riga)
             except Exception as e:

@@ -6,42 +6,82 @@ class HomeView(tk.Frame):
         super().__init__(parent, bg="#ffffff")
         self.db = Database()
 
-        # Intestazione principale
-        tk.Label(self, text="Benvenuto in AIRE", font=("Arial", 28, "bold"), bg="#ffffff", fg="#2c3e50").pack(pady=(50, 10))
-        tk.Label(self, text="Sistema di Monitoraggio Qualità dell'Aria a Milano", font=("Arial", 14), bg="#ffffff", fg="#7f8c8d").pack(pady=5)
+        self.build_ui()
+        self.after(0, self.load_stats)
 
-        # Frame orizzontale per contenere le "Card" delle statistiche
-        stats_frame = tk.Frame(self, bg="#ffffff")
-        stats_frame.pack(pady=50)
+    def build_ui(self):
+        tk.Label(
+            self,
+            text="Benvenuto in AIRE",
+            font=("Arial", 28, "bold"),
+            bg="#ffffff",
+            fg="#2c3e50"
+        ).pack(pady=(50, 10))
 
-        # Variabili di default in caso di errore
-        tot_misurazioni = "N/D"
-        tot_stazioni = "N/D"
+        tk.Label(
+            self,
+            text="Sistema di Monitoraggio Qualità dell'Aria a Milano",
+            font=("Arial", 14),
+            bg="#ffffff",
+            fg="#2c3e50"
+        ).pack(pady=5)
 
-        # Connessione al database per estrarre i conteggi in tempo reale
-        conn = self.db.connect()
-        if conn and conn.is_connected():
-            cursor = conn.cursor()
+        self.stats_frame = tk.Frame(self, bg="#ffffff")
+        self.stats_frame.pack(pady=50)
+
+        self.rilevamenti_value = tk.Label(
+            self.stats_frame,
+            text="Caricamento...",
+            font=("Arial", 24, "bold"),
+            bg="#ecf0f1",
+            fg="#2980b9",
+            padx=40,
+            pady=20
+        )
+        self.rilevamenti_value.grid(row=0, column=0, padx=30)
+
+        self.stazioni_value = tk.Label(
+            self.stats_frame,
+            text="Caricamento...",
+            font=("Arial", 24, "bold"),
+            bg="#ecf0f1",
+            fg="#2980b9",
+            padx=40,
+            pady=20
+        )
+        self.stazioni_value.grid(row=0, column=1, padx=30)
+
+    def load_stats(self):
+        try:
+            conn = self.db.connect()
+            if not conn or not conn.is_connected():
+                self.rilevamenti_value.config(text="N/D")
+                self.stazioni_value.config(text="N/D")
+                return
+
+            cursor = conn.cursor(buffered=True)
             try:
-                # Conta tutte le righe della tabella misurazioni
-                cursor.execute("SELECT COUNT(*) FROM misurazioni")
-                # Formattiamo il numero con i puntini delle migliaia (es. 170.393)
-                tot_misurazioni = f"{cursor.fetchone()[0]:,}".replace(',', '.')
-                
-                # Conta le centraline
-                cursor.execute("SELECT COUNT(*) FROM stazioni")
-                tot_stazioni = cursor.fetchone()[0]
-            except Exception as e:
-                print(f"Errore durante il caricamento delle statistiche: {e}")
+                cursor.execute("SELECT COUNT(*) FROM rilevamenti")
+                risultato_ril = cursor.fetchone()
+                if risultato_ril:
+                    self.rilevamenti_value.config(
+                        text=f"{risultato_ril[0]:,}".replace(",", ".")
+                    )
+
+                cursor.execute("SELECT COUNT(*) FROM stazioni_rilevamento")
+                risultato_staz = cursor.fetchone()
+                if risultato_staz:
+                    self.stazioni_value.config(text=str(risultato_staz[0]))
             finally:
                 cursor.close()
 
-        # Disegna le Card chiamando la funzione di supporto
-        self.crea_card(stats_frame, "📊", "Misurazioni Rilevate", str(tot_misurazioni), 0)
-        self.crea_card(stats_frame, "📍", "Stazioni Monitorate", str(tot_stazioni), 1)
+        except Exception as e:
+            print(f"Errore caricamento HomeView: {e}")
+            self.rilevamenti_value.config(text="N/D")
+            self.stazioni_value.config(text="N/D")
 
+            
     def crea_card(self, parent, icona, titolo, valore, col):
-        """Crea un riquadro grafico (Card) per visualizzare un singolo dato statistico."""
         card = tk.Frame(parent, bg="#ecf0f1", bd=0, highlightbackground="#bdc3c7", highlightthickness=1, padx=40, pady=20)
         card.grid(row=0, column=col, padx=30)
         

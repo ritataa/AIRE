@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-
+# Active: 1773930107655@@localhost@3306@aire_db
 class Database:
     _instance = None
 
