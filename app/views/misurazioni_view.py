@@ -67,7 +67,7 @@ class MisurazioniView(tk.Frame):
         self.entry_inquinante = ttk.Entry(self.crud_frame)
         self.entry_inquinante.grid(row=2, column=1, padx=10, pady=5)
 
-        btn_frame = tk.Frame(self.crud_frame, bg="#ffffff", fg="#2c3e50")
+        btn_frame = tk.Frame(self.crud_frame, bg="#ffffff")
         btn_frame.grid(row=3, column=0, columnspan=4, pady=10)
 
         tk.Button(btn_frame, text="➕ Aggiungi", bg="#2ecc71", fg="black", command=self.aggiungi_record).pack(side="left", padx=10)
