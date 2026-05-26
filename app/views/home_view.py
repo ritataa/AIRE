@@ -51,6 +51,25 @@ class HomeView(tk.Frame):
         )
         self.stazioni_value.grid(row=0, column=1, padx=30)
 
+        # Etichette descrittive sotto i valori
+        self.rilevamenti_text = tk.Label(
+            self.stats_frame,
+            text="Misurazioni Totali",
+            font=("Arial", 12),
+            bg="#ffffff",
+            fg="#34495e"
+        )
+        self.rilevamenti_text.grid(row=1, column=0, pady=(10,0))
+
+        self.stazioni_text = tk.Label(
+            self.stats_frame,
+            text="Stazioni di Rilevamento",
+            font=("Arial", 12),
+            bg="#ffffff",
+            fg="#34495e"
+        )
+        self.stazioni_text.grid(row=1, column=1, pady=(10,0))
+
     def load_stats(self):
         try:
             conn = self.db.connect()
@@ -64,14 +83,17 @@ class HomeView(tk.Frame):
                 cursor.execute("SELECT COUNT(*) FROM rilevamenti")
                 risultato_ril = cursor.fetchone()
                 if risultato_ril:
-                    self.rilevamenti_value.config(
-                        text=f"{risultato_ril[0]:,}".replace(",", ".")
-                    )
+                    formatted = f"{risultato_ril[0]:,}".replace(",", ".")
+                    self.rilevamenti_value.config(text=formatted)
+                    # Aggiorna anche il testo descrittivo con il valore
+                    self.rilevamenti_text.config(text=f"Misurazioni Totali")
 
                 cursor.execute("SELECT COUNT(*) FROM stazioni_rilevamento")
                 risultato_staz = cursor.fetchone()
                 if risultato_staz:
-                    self.stazioni_value.config(text=str(risultato_staz[0]))
+                    count_staz = risultato_staz[0]
+                    self.stazioni_value.config(text=str(count_staz))
+                    self.stazioni_text.config(text=f"Stazioni di Rilevamento")
             finally:
                 cursor.close()
 
